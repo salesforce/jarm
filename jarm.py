@@ -393,8 +393,8 @@ def jarm_hash(jarm_raw):
         alpns_and_ext += components[2]
         alpns_and_ext += components[3]
     #Custom jarm hash has the md5 of alpns and extensions added to the end
-    md5 = (hashlib.md5(alpns_and_ext.encode())).hexdigest()
-    fuzzy_hash += md5
+    sha256 = (hashlib.sha256(alpns_and_ext.encode())).hexdigest()
+    fuzzy_hash += sha256[0:32]
     return fuzzy_hash
 
 #Fuzzy hash for ciphers is the index number (in hex) of the cipher in the list
