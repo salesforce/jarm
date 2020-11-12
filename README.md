@@ -18,7 +18,7 @@ Example:
 `% python3 jarm.py www.salesforce.com`  
 `Domain: www.salesforce.com`  
 `Resolved IP: 23.50.225.123`  
-`JARM: 2ad2ad0002ad2ad00042d42d000000ef0ef68364a2f549f7d3509279795885`  
+`JARM: 2ad2ad0002ad2ad00042d42d00000069d641f34fe76acdc05c40262f8815e5`  
   
 ### Batch run JARM on a large list at speed
 `./jarm.sh <list> <output_file>`  
@@ -28,8 +28,8 @@ Example:
 ### Example Output  
 | Domain | JARM |
 | --- | --- |
-| salesforce.com | 2ad2ad0002ad2ad00042d42d000000ef0ef68364a2f549f7d3509279795885 |
-| force.com | 2ad2ad0002ad2ad00042d42d000000ef0ef68364a2f549f7d3509279795885 |
+| salesforce.com | 2ad2ad0002ad2ad00042d42d00000069d641f34fe76acdc05c40262f8815e5 |
+| force.com | 2ad2ad0002ad2ad00042d42d00000069d641f34fe76acdc05c40262f8815e5 |
 | google.com | 27d40d40d29d40d1dc42d43d00041d4689ee210389f4f6b4b5b1b93f92252d |
 | youtube.com | 27d40d40d29d40d1dc42d43d00041d4689ee210389f4f6b4b5b1b93f92252d |
 | gmail.com | 27d40d40d29d40d1dc42d43d00041d4689ee210389f4f6b4b5b1b93f92252d |
@@ -65,15 +65,15 @@ It is important to note that JARM is a high-performance fingerprint function and
   
 ### How JARM Can Be Used to Identify Malicious Servers
   
-Malware command and control (C2) and malicious servers are configured by their creators like any other server and then deployed across their fleet. These therefore tend to produce unique JARM fingerprints. Below are examples of common malware and offensive tools and the JARM overlap with the Alexa Top 1M websites:  
+Malware command and control (C2) and malicious servers are configured by their creators like any other server and then deployed across their fleet. These therefore tend to produce unique JARM fingerprints. Below are examples of common malware and offensive tools and the JARM overlap with the Alexa Top 1M websites (as of Oct. 2020):  
   
 | Malicious Server C2 | JARM Fingerprint | Overlap with Alexa Top 1M |
 | --- | --- | --- |
 | Trickbot | 22b22b09b22b22b22b22b22b22b22b352842cd5d6b0278445702035e06875c | 0 |
 | AsyncRAT | 1dd40d40d00040d1dc1dd40d1dd40d3df2d6a0c2caaa0dc59908f0d3602943 | 0 |
-| Metasploit | 07d14d16d21d21d00042d43d0000001fabcf824895a2a46bfd084e13145e0f | 0 |
-| Cobalt Strike | 07d14d16d21d21d07c42d41d00041d4703788ced5e8cdefb54eff54f220667 | 0 |
-| Merlin C2 | 29d21b20d29d29d21c41d21b21b41db98abdba64c7e75867bcb509a083a537 | 303 |
+| Metasploit | 07d14d16d21d21d00042d43d000000aa99ce74e2c6d013c745aa52b5cc042d | 0 |
+| Cobalt Strike | 07d14d16d21d21d07c42d41d00041d24a458a375eef0c576d23a7bab9a9fb1 | 0 |
+| Merlin C2 | 29d21b20d29d29d21c41d21b21b41d494e0df9532e75299f15ba73156cee38 | 303 |
   
 With little to no overlap of the Alexa Top 1M Websites, it should be unlikely for a host within an organization to connect to a server with these JARM fingerprints.  
   
