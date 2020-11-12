@@ -79,9 +79,9 @@ With little to no overlap of the Alexa Top 1M Websites, it should be unlikely fo
   
   
 ### JARM Team  
-John Althouse - Original idea, concept and project lead  
-Andrew Smart - Concept and testing  
-RJ Nunnally - Programing and testing  
-Mike Brady - Programing and testing  
+[John Althouse](https://www.linkedin.com/in/johnalthouse/) - Original idea, concept and project lead  
+[Andrew Smart](https://www.linkedin.com/in/andrew-smart-a3b15a2/) - Concept and testing  
+[RJ Nunnally](https://www.linkedin.com/in/rjnunnally/) - Programing and testing  
+[Mike Brady](https://www.linkedin.com/in/mike-brady-b5293b21/) - Programing and testing  
   
-Rewritten in Python for operational use by Caleb Yu
+Rewritten in Python for operational use by [Caleb Yu](https://www.linkedin.com/in/caleb-yu/)
