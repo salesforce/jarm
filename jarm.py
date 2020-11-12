@@ -1,3 +1,19 @@
+# Version 1.0 (November 2020)
+#
+# Created by:
+# John Althouse
+# Andrew Smart
+# RJ Nunaly
+# Mike Brady
+#
+# Converted to Python by: 
+# Caleb Yu
+#
+# Copyright (c) 2020, salesforce.com, inc.
+# All rights reserved.
+# Licensed under the BSD 3-Clause license. 
+# For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+#
 import socket
 import struct
 import os
