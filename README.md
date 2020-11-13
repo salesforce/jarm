@@ -9,7 +9,7 @@ JARM fingerprints can be used to:
 - Identify malware command and control infrastructure and other malicious servers on the Internet.
   
 JARM support is being added to:  
-[Security Trails](https://securitytrails.com/)  
+[SecurityTrails](https://securitytrails.com/)  
 [Shodan](http://shodan.io/)  
   
 ### Run JARM
