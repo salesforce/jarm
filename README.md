@@ -1,7 +1,9 @@
 # JARM  
   
-JARM is an active Transport Layer Security (TLS) server fingerprinting tool.
-
+Please read the initial [JARM blog post](https://engineering.salesforce.com/easily-identify-malicious-servers-on-the-internet-with-jarm-e095edac525a) for more information.
+  
+JARM is an active Transport Layer Security (TLS) server fingerprinting tool.  
+  
 JARM fingerprints can be used to:
 - Quickly verify that all servers in a group have the same TLS configuration.
 - Group disparate servers on the internet by configuration, identifying that a server may belong to Google vs. Salesforce vs. Apple, for example.
@@ -11,6 +13,7 @@ JARM fingerprints can be used to:
 JARM support is being added to:  
 [SecurityTrails](https://securitytrails.com/)  
 [Shodan](http://shodan.io/)  
+[BinaryEdge](https://www.binaryedge.io/)  
   
 ### Run JARM
 `python3 jarm.py [-h] [-i INPUT] [-p PORT] [-v] [-V] [-o OUTPUT] [domain/IP]`  
