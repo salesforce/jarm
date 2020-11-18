@@ -25,7 +25,6 @@ import argparse
 import hashlib
 import ipaddress
 
-
 parser = argparse.ArgumentParser(description="Enter an IP address and port to scan.")
 group = parser.add_mutually_exclusive_group()
 group.add_argument("scan", nargs='?', help="Enter an IP or domain to scan.")
