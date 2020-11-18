@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import json
+import argparse
+
+try:
+    import jarm
+except:
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    import jarm
+
+def main():
+    parser = argparse.ArgumentParser(description="Calculate JARM hash for a host or a list of hosts")
+    parser.add_argument("-p", "--port", type=int, default=443,
+                        help="Specify a port to scan (default 443)")
+    target = parser.add_mutually_exclusive_group(required=True)
+    target.add_argument("scan", nargs='?',
+                        help="Specify an IP or domain to scan")
+    target.add_argument("-f", "--file", type=str,
+                       help="Provide a path to a list of IP addresses or domains to scan, " \
+                       "one per line (optional: Specify port to scan with comma separation, e.g. 8.8.4.4,853)")
+    output = parser.add_mutually_exclusive_group()
+    output.add_argument("-c", "--csv", action="store_true",
+                        help="Print results in CSV format")
+    output.add_argument("-j", "--json", action="store_true",
+                        help="Print results in JSON format")
+    args = parser.parse_args()
+
+    hosts = []
+    if args.file:
+        if not os.path.exists(args.file):
+            print(f"ERROR: File does not exist at path {args.file}")
+            sys.exit(-1)
+
+        with open(args.file, "r") as handle:
+            for line in handle:
+                line = line.strip().lower()
+                if "," in line:
+                    host, port = line.split(",")
+                else:
+                    host = line
+                    port = args.port
+
+                hosts.append([host, int(port)])
+    elif args.scan:
+        hosts.append([args.scan, args.port])
+
+    results = []
+    for host in hosts:
+        if not args.csv and not args.json:
+            print(f"Scanning {host[0]} on port {host[1]}")
+
+        j = jarm.JARM(host[0], host[1])
+        j.run()
+
+        if args.csv:
+            print(f"{host[0]},{host[1]},{j.hash}")
+        elif args.json:
+            print(json.dumps({"host": host[0], "port": host[1], "hash": j.hash}))
+        else:
+            print(f"JARM hash: {j.hash}")
+
+if __name__ == "__main__":
+    main()
