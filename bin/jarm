@@ -19,8 +19,9 @@ def main():
     target.add_argument("scan", nargs='?',
                         help="Specify an IP or domain to scan")
     target.add_argument("-f", "--file", type=str,
-                       help="Provide a path to a list of IP addresses or domains to scan, " \
-                       "one per line (optional: Specify port to scan with comma separation, e.g. 8.8.4.4,853)")
+                        help="Provide a path to a list of IP addresses or domains to scan, " \
+                             "one per line (optional: Specify port to scan with comma separation, " \
+                             "e.g. 8.8.4.4,853)")
     output = parser.add_mutually_exclusive_group()
     output.add_argument("-c", "--csv", action="store_true",
                         help="Print results in CSV format")
