@@ -25,11 +25,6 @@ import argparse
 import hashlib
 import ipaddress
 
-# Python 2 compatibility
-try:
-    TimeoutError
-except:
-    TimeoutError = socket.timeout
 
 parser = argparse.ArgumentParser(description="Enter an IP address and port to scan.")
 group = parser.add_mutually_exclusive_group()
@@ -304,7 +299,7 @@ def send_packet(packet):
         sock.close()
         return bytearray(data), ip[0]
     #Timeout errors result in an empty hash
-    except (TimeoutError,socket.timeout) as e:
+    except socket.timeout as e:
         sock.close()
         return "TIMEOUT", ip[0]
     except Exception as e:
