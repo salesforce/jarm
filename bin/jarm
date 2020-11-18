@@ -47,7 +47,6 @@ def main():
     elif args.scan:
         hosts.append([args.scan, args.port])
 
-    results = []
     for host in hosts:
         if not args.csv and not args.json:
             print(f"Scanning {host[0]} on port {host[1]}")
