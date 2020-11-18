@@ -8,7 +8,6 @@ import socket
 import struct
 import random
 import hashlib
-import argparse
 import ipaddress
 
 class JARM:
