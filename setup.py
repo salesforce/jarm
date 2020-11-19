@@ -19,7 +19,7 @@ setup(
     author_email=__author_email__,
     description=__description__,
     long_description=long_description,
-    scripts = ["bin/jarm"],
+    scripts=["bin/jarm"],
     packages=find_packages(),
     include_package_data=True,
     classifiers=[

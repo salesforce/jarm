@@ -10,6 +10,7 @@ import random
 import hashlib
 import ipaddress
 
+
 class JARM:
 
     def __init__(self, host, port=443):
@@ -44,7 +45,7 @@ class JARM:
             client_hello = b"\x03\x03"
         elif jarm_details[2] == "SSLv3":
             payload += b"\x03\x00"
-            client_hello =  b"\x03\x00"
+            client_hello = b"\x03\x00"
         elif jarm_details[2] == "TLS_1":
             payload += b"\x03\x01"
             client_hello = b"\x03\x01"
@@ -128,15 +129,15 @@ class JARM:
                             b"\x00\x35", b"\x00\x3d", b"\xc0\x9d", b"\xc0\xa1",
                             b"\x00\x9d", b"\x00\x41", b"\x00\xba", b"\x00\x84",
                             b"\x00\xc0", b"\x00\x07", b"\x00\x04", b"\x00\x05"]
-        
+
         # Change cipher order.
         if jarm_details[4] != "FORWARD":
             cipher_lists = self._cipher_mung(cipher_lists, jarm_details[4])
-        
+
         # Add GREASE to beginning of cipher list (if applicable).
         if jarm_details[5] == "GREASE":
             cipher_lists.insert(0, self._choose_grease())
-        
+
         # Generate cipher list.
         for cipher in cipher_lists:
             selected_ciphers += cipher
@@ -160,7 +161,7 @@ class JARM:
         elif (request == "TOP_HALF"):
             if (cipher_len % 2 == 1):
                 output.append(ciphers[int(cipher_len/2)])
-                #Top half gets the middle cipher
+                # Top half gets the middle cipher.
 
             output += self._cipher_mung(self._cipher_mung(ciphers, "REVERSE"),
                                         "BOTTOM_HALF")
@@ -245,7 +246,7 @@ class JARM:
     # Client hello apln extension.
     def _app_layer_proto_negotiation(self, jarm_details):
         ext = b"\x00\x10"
-        if (jarm_details[6] == "RARE_APLN"):
+        if jarm_details[6] == "RARE_APLN":
             # Removes h2 and HTTP/1.1.
             alpns = [b"\x08\x68\x74\x74\x70\x2f\x30\x2e\x39",
                      b"\x08\x68\x74\x74\x70\x2f\x31\x2e\x30",
@@ -283,9 +284,9 @@ class JARM:
         """Generate key share extension for client hello.
         """
         ext = b"\x00\x33"
-        
+
         # Add grease value if necessary.
-        if grease == True:
+        if grease:
             share_ext = self._choose_grease()
             share_ext += b"\x00\x01\x00"
         else:
@@ -301,7 +302,7 @@ class JARM:
         ext += struct.pack(">H", first_length)
         ext += struct.pack(">H", second_length)
         ext += share_ext
-        
+
         return ext
 
     def _supported_versions(self, jarm_details, grease):
@@ -322,7 +323,7 @@ class JARM:
         # Assemble the extension.
         ext = b"\x00\x2b"
         # Add GREASE if applicable.
-        if grease == True:
+        if grease:
             versions = self._choose_grease()
         else:
             versions = b""
@@ -344,10 +345,10 @@ class JARM:
             # Determine if the input is an IP or domain name.
             try:
                 if (ipaddress.ip_address(self.destination_host) is ipaddress.IPv4Address or
-                    ipaddress.ip_address(self.destination_host) is ipaddress.IPv6Address):
+                        ipaddress.ip_address(self.destination_host) is ipaddress.IPv6Address):
                     ip = (self.destination_host, self.destination_port)
-            except ValueError as e:
-                    ip = (None, None)
+            except ValueError:
+                ip = (None, None)
 
             # Connect the socket.
             if ":" in self.destination_host:
@@ -370,10 +371,10 @@ class JARM:
             sock.shutdown(socket.SHUT_RDWR)
             sock.close()
             return data, ip[0]
-        except (TimeoutError,socket.timeout) as e:
+        except (TimeoutError, socket.timeout):
             sock.close()
             return "TIMEOUT", ip[0]
-        except Exception as e:
+        except Exception:
             sock.close()
             return None, ip[0]
 
@@ -404,7 +405,7 @@ class JARM:
                 return jarm
             else:
                 raise Exception("Unexpected result")
-        except Exception as e:
+        except Exception:
             return "|||"
 
     def _extract_extension_info(self, data, counter):
@@ -446,7 +447,7 @@ class JARM:
                 else:
                     result += "-"
             return result
-        except IndexError as e:
+        except IndexError:
             return "|||"
 
     def _version_byte(self, version):
@@ -490,7 +491,7 @@ class JARM:
                       b"\x00\x45", b"\x00\x67", b"\x00\x6b", b"\x00\x84",
                       b"\x00\x88", b"\x00\x9a", b"\x00\x9c", b"\x00\x9d",
                       b"\x00\x9e", b"\x00\x9f", b"\x00\xba", b"\x00\xbe",
-                      b"\x00\xc0", b"\x00\xc4", b"\xc0\x07", b"\xc0\x08", 
+                      b"\x00\xc0", b"\x00\xc4", b"\xc0\x07", b"\xc0\x08",
                       b"\xc0\x09", b"\xc0\x0a", b"\xc0\x11", b"\xc0\x12",
                       b"\xc0\x13", b"\xc0\x14", b"\xc0\x23", b"\xc0\x24",
                       b"\xc0\x27", b"\xc0\x28", b"\xc0\x2b", b"\xc0\x2c",
@@ -534,7 +535,7 @@ class JARM:
             fuzzy_hash += self._version_byte(components[1])
             alpns_and_ext += components[2]
             alpns_and_ext += components[3]
-        
+
         # Custom jarm hash has the sha256 of alpns and extensions added to the end.
         sha256 = (hashlib.sha256(alpns_and_ext.encode())).hexdigest()
         fuzzy_hash += sha256[0:32]
@@ -545,8 +546,8 @@ class JARM:
         """Conduct tests and calculate JARM.
         """
 
-        #Select the packets and formats to send.
-        #Array format:
+        # Select the packets and formats to send.
+        # Array format:
         #    0: self.destination_host
         #    1: self.destination_port
         #    2: version
@@ -557,12 +558,12 @@ class JARM:
         #    7: 1.3_SUPPORT
         #    8: extension_orders
 
-        #Possible versions: SSLv3, TLS_1, TLS_1.1, TLS_1.2, TLS_1.3
-        #Possible cipher lists: ALL, NO1.3
-        #GREASE: either NO_GREASE or GREASE
-        #APLN: either APLN or RARE_APLN
-        #Supported Verisons extension: 1.2_SUPPPORT, NO_SUPPORT, or 1.3_SUPPORT
-        #Possible Extension order: FORWARD, REVERSE
+        # Possible versions: SSLv3, TLS_1, TLS_1.1, TLS_1.2, TLS_1.3
+        # Possible cipher lists: ALL, NO1.3
+        # GREASE: either NO_GREASE or GREASE
+        # APLN: either APLN or RARE_APLN
+        # Supported Verisons extension: 1.2_SUPPPORT, NO_SUPPORT, or 1.3_SUPPORT
+        # Possible Extension order: FORWARD, REVERSE
 
         queue = [
             [self.destination_host, self.destination_port, "TLS_1.2", "ALL", "FORWARD", "NO_GREASE", "APLN", "1.2_SUPPORT", "REVERSE"],
@@ -581,7 +582,7 @@ class JARM:
         for test in queue:
             payload = self._packet_building(test)
             server_hello, ip = self._send_packet(payload)
-            
+
             # Deal with timeout error.
             if server_hello == "TIMEOUT":
                 self._jarm_raw = "|||,|||,|||,|||,|||,|||,|||,|||,|||,|||"
