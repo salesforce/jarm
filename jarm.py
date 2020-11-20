@@ -6,12 +6,12 @@
 # RJ Nunaly
 # Mike Brady
 #
-# Converted to Python by: 
+# Converted to Python by:
 # Caleb Yu
 #
 # Copyright (c) 2020, salesforce.com, inc.
 # All rights reserved.
-# Licensed under the BSD 3-Clause license. 
+# Licensed under the BSD 3-Clause license.
 # For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
 #
 import socket
@@ -30,6 +30,7 @@ parser.add_argument("-p", "--port", help="Enter a port to scan (default 443).", 
 parser.add_argument("-v", "--verbose", help="Verbose mode: displays the JARM results before being hashed.", action="store_true")
 parser.add_argument("-V", "--version", help="Print out version and exit.", action="store_true")
 parser.add_argument("-o", "--output", help="Provide a filename to output/append results to a CSV file.", type=str)
+parser.add_argument("-P", "--proxy", help="To use a SOCKS5 proxy, provide address:port.", type=str)
 args = parser.parse_args()
 if args.version:
     print("JARM version 1.0")
@@ -275,12 +276,20 @@ def send_packet(packet):
                 raw_ip = False
         #Connect the socket
         if ":" in destination_host:
-            sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+            if args.proxy:
+                sock = socks.socksocket(socket.AF_INET6, socket.SOCK_STREAM)
+                sock.set_proxy(socks.SOCKS5, proxyhost, proxyport)
+            else:
+                sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
             #Timeout of 20 seconds
             sock.settimeout(20)
             sock.connect((destination_host, destination_port, 0, 0))
         else:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            if args.proxy:
+                sock = socks.socksocket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.set_proxy(socks.SOCKS5, proxyhost, proxyport)
+            else:
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             #Timeout of 20 seconds
             sock.settimeout(20)
             sock.connect((destination_host, destination_port))
@@ -441,6 +450,12 @@ def version_byte(version):
     byte = options[count]
     return byte
 
+def ParseNumber(number):
+    if number.startswith('0x'):
+        return int(number[2:], 16)
+    else:
+        return int(number)
+
 def main():
     #Select the packets and formats to send
     #Array format = [destination_host,destination_port,version,cipher_list,cipher_order,GREASE,RARE_APLN,1.3_SUPPORT,extension_orders]
@@ -511,6 +526,16 @@ def main():
                     print(",")
                 scan_count += 1
 
+
+#set proxy
+if args.proxy:
+    proxyhost, proxyport = args.proxy.split(':')
+    proxyport = ParseNumber(proxyport)
+    try:
+        import socks
+    except ImportError:
+        print('Option proxy requires PySocks: pip install PySocks')
+        exit()
 
 #Set destination host and port
 destination_host = args.scan
