@@ -17,6 +17,7 @@
 import socket
 import struct
 import os
+import sys
 import random
 import argparse
 import hashlib
@@ -30,6 +31,7 @@ parser.add_argument("-p", "--port", help="Enter a port to scan (default 443).", 
 parser.add_argument("-v", "--verbose", help="Verbose mode: displays the JARM results before being hashed.", action="store_true")
 parser.add_argument("-V", "--version", help="Print out version and exit.", action="store_true")
 parser.add_argument("-o", "--output", help="Provide a filename to output/append results to a CSV file.", type=str)
+parser.add_argument("-j", "--json", help="Output ndjson (either to file or stdout; overrides --output defaults to CSV)", action="store_true")
 args = parser.parse_args()
 if args.version:
     print("JARM version 1.0")
@@ -483,33 +485,52 @@ def main():
     #Write to file
     if args.output:
         if ip != None:
-            file.write(destination_host + "," + ip + "," + result)
+            if args.json:
+                file.write('{"host":"' + destination_host + '","ip":"' + ip + '","result":"' + result + '"')
+            else:
+                file.write(destination_host + "," + ip + "," + result)
         else:
             file.write(destination_host + ",Failed to resolve IP," + result)
         #Verbose mode adds pre-fuzzy-hashed JARM
         if args.verbose:
-            file.write("," + jarm)
+            if args.json:
+                file.write(',"jarm":"' + jarm + '"')
+            else:
+                file.write("," + jarm)
+        if args.json:
+            file.write("}")
         file.write("\n")
     #Print to STDOUT
     else:
         if ip != None:
-            print("Domain: " + destination_host)
-            print("Resolved IP: " + ip)
-            print("JARM: " + result)
+            if args.json:
+                sys.stdout.write('{"host":"' + destination_host + '","ip":"' + ip + '","result":"' + result + '"')
+            else:
+                print("Domain: " + destination_host)
+                print("Resolved IP: " + ip)
+                print("JARM: " + result)
         else:
-            print("Domain: " + destination_host)
-            print("Resolved IP: IP failed to resolve.")
-            print("JARM: " + result)
+            if args.json:
+                sys.stdout.write('{"host":"' + destination_host + '","ip":null,"result":"' + result + '"')
+            else:
+                print("Domain: " + destination_host)
+                print("Resolved IP: IP failed to resolve.")
+                print("JARM: " + result)
         #Verbose mode adds pre-fuzzy-hashed JARM
         if args.verbose:
-            scan_count = 1
-            for round in jarm.split(","):
-                print("Scan " + str(scan_count) + ": " + round, end="")
-                if scan_count == len(jarm.split(",")):
-                    print("\n",end="")
-                else:
-                    print(",")
-                scan_count += 1
+            if args.json:
+                sys.stdout.write(',"jarm":"' + jarm + '"')
+            else:
+                scan_count = 1
+                for round in jarm.split(","):
+                    print("Scan " + str(scan_count) + ": " + round, end="")
+                    if scan_count == len(jarm.split(",")):
+                        print("\n",end="")
+                    else:
+                        print(",")
+                    scan_count += 1
+        if args.json:
+            sys.stdout.write("}\n")
 
 
 #Set destination host and port
@@ -518,12 +539,23 @@ if args.port:
     destination_port = int(args.port)
 else:
     destination_port = 443
+#JSON output
+if args.json:
+    file_ext = ".json"
+else:
+    file_ext = ".csv"
 #File output option
 if args.output:
-    if args.output[-4:] != ".csv":
-        output_file = args.output + ".csv"
+    if args.json:
+        if args.output[-5:] != file_ext:
+            output_file = args.output + file_ext
+        else:
+            output_file = args.output
     else:
-        output_file = args.output
+        if args.output[-4:] != file_ext:
+            output_file = args.output + file_ext
+        else:
+            output_file = args.output
     file = open(output_file, "a+")
 if args.input:
     input_file = open(args.input, "r")
