@@ -482,8 +482,6 @@ def main():
         else:
             jarm += ","
     #Fuzzy hash
-    print("%%%%%JARM%%%%%")
-    print(jarm)
     result = jarm_hash(jarm)
     #Write to file
     if args.output:
