@@ -343,7 +343,7 @@ def extract_extension_info(data, counter, server_hello_length):
             return "|"
         elif (data[counter+50:counter+53] == b"\x0e\xac\x0b") or (data[82:85] == b"\x0f\xf0\x0b"):
             return "|"
-        elif counter+45 >= server_hello_length:
+        elif counter+42 >= server_hello_length:
             return "|"
         count = 49+counter
         length = int.from_bytes(data[counter+47:counter+49], byteorder='big')
