@@ -26,7 +26,7 @@ Example:
 ### Batch run JARM on a large list at speed
 `./jarm.sh <list> <output_file>`  
 Example:  
-`% ./jarm.sh alexa500.txt jarm_alexa_500.csv`  
+`./jarm.sh -i alexa500.txt -o jarm_alexa_500.csv`  
   
 ### Example Output  
 | Domain | JARM |
