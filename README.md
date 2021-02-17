@@ -21,7 +21,11 @@ Example:
 `% python3 jarm.py www.salesforce.com`  
 `Domain: www.salesforce.com`  
 `Resolved IP: 23.50.225.123`  
-`JARM: 2ad2ad0002ad2ad00042d42d00000069d641f34fe76acdc05c40262f8815e5`  
+`JARM: 2ad2ad0002ad2ad00042d42d00000069d641f34fe76acdc05c40262f8815e5`
+
+Note: To use it with Python 2 you'll need the [ipaddress](https://pypi.org/project/ipaddress/) module:
+
+`pip install -r requirements.txt`
   
 ### Batch run JARM on a large list at speed
 `./jarm.sh <list> <output_file>`  

@@ -6,14 +6,17 @@
 # RJ Nunaly
 # Mike Brady
 #
-# Converted to Python by: 
+# Converted to Python by:
 # Caleb Yu
 #
 # Copyright (c) 2020, salesforce.com, inc.
 # All rights reserved.
-# Licensed under the BSD 3-Clause license. 
+# Licensed under the BSD 3-Clause license.
 # For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
 #
+from __future__ import print_function
+
+import codecs
 import socket
 import struct
 import os
@@ -32,6 +35,7 @@ parser.add_argument("-v", "--verbose", help="Verbose mode: displays the JARM res
 parser.add_argument("-V", "--version", help="Print out version and exit.", action="store_true")
 parser.add_argument("-o", "--output", help="Provide a filename to output/append results to a CSV file.", type=str)
 parser.add_argument("-j", "--json", help="Output ndjson (either to file or stdout; overrides --output defaults to CSV)", action="store_true")
+parser.add_argument("-P", "--proxy", help="To use a SOCKS5 proxy, provide address:port.", type=str)
 args = parser.parse_args()
 if args.version:
     print("JARM version 1.0")
@@ -277,12 +281,20 @@ def send_packet(packet):
                 raw_ip = False
         #Connect the socket
         if ":" in destination_host:
-            sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+            if args.proxy:
+                sock = socks.socksocket(socket.AF_INET6, socket.SOCK_STREAM)
+                sock.set_proxy(socks.SOCKS5, proxyhost, proxyport)
+            else:
+                sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
             #Timeout of 20 seconds
             sock.settimeout(20)
             sock.connect((destination_host, destination_port, 0, 0))
         else:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            if args.proxy:
+                sock = socks.socksocket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.set_proxy(socks.SOCKS5, proxyhost, proxyport)
+            else:
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             #Timeout of 20 seconds
             sock.settimeout(20)
             sock.connect((destination_host, destination_port))
@@ -295,9 +307,9 @@ def send_packet(packet):
         #Close socket
         sock.shutdown(socket.SHUT_RDWR)
         sock.close()
-        return data, ip[0]
+        return bytearray(data), ip[0]
     #Timeout errors result in an empty hash
-    except (TimeoutError,socket.timeout) as e:
+    except socket.timeout as e:
         sock.close()
         return "TIMEOUT", ip[0]
     except Exception as e:
@@ -322,9 +334,9 @@ def read_packet(data, jarm_details):
             #Find server's selected version
             version = data[9:11]
             #Format
-            jarm += str(selected_cipher.hex())
+            jarm += codecs.encode(selected_cipher, 'hex').decode('ascii')
             jarm += "|"
-            jarm += str(version.hex())
+            jarm += codecs.encode(version, 'hex').decode('ascii')
             jarm += "|"
             #Extract extensions
             extensions = (extract_extension_info(data, counter))
@@ -345,14 +357,14 @@ def extract_extension_info(data, counter):
         elif (data[counter+50:counter+53] == b"\x0e\xac\x0b") or (data[82:85] == b"\x0f\xf0\x0b"):
             return "|||"
         count = 49+counter
-        length = int.from_bytes(data[counter+47:counter+49], byteorder='big')
+        length = int(codecs.encode(data[counter+47:counter+49], 'hex'), 16)
         maximum = length+(count-1)
         types = []
         values = []
         #Collect all extension types and values for later reference
         while count < maximum:
             types.append(data[count:count+2])
-            ext_length = int.from_bytes(data[count+2:count+4], byteorder='big')
+            ext_length = int(codecs.encode(data[count+2:count+4], 'hex'), 16)
             if ext_length == 0:
                 count += 4
                 values.append("")
@@ -367,7 +379,7 @@ def extract_extension_info(data, counter):
         #Add formating hyphens
         add_hyphen = 0
         while add_hyphen < len(types):
-            result += types[add_hyphen].hex()
+            result += codecs.encode(types[add_hyphen], 'hex').decode('ascii')
             add_hyphen += 1
             if add_hyphen == len(types):
                 break
@@ -422,7 +434,7 @@ def cipher_bytes(cipher):
     list = [b"\x00\x04", b"\x00\x05", b"\x00\x07", b"\x00\x0a", b"\x00\x16", b"\x00\x2f", b"\x00\x33", b"\x00\x35", b"\x00\x39", b"\x00\x3c", b"\x00\x3d", b"\x00\x41", b"\x00\x45", b"\x00\x67", b"\x00\x6b", b"\x00\x84", b"\x00\x88", b"\x00\x9a", b"\x00\x9c", b"\x00\x9d", b"\x00\x9e", b"\x00\x9f", b"\x00\xba", b"\x00\xbe", b"\x00\xc0", b"\x00\xc4", b"\xc0\x07", b"\xc0\x08", b"\xc0\x09", b"\xc0\x0a", b"\xc0\x11", b"\xc0\x12", b"\xc0\x13", b"\xc0\x14", b"\xc0\x23", b"\xc0\x24", b"\xc0\x27", b"\xc0\x28", b"\xc0\x2b", b"\xc0\x2c", b"\xc0\x2f", b"\xc0\x30", b"\xc0\x60", b"\xc0\x61", b"\xc0\x72", b"\xc0\x73", b"\xc0\x76", b"\xc0\x77", b"\xc0\x9c", b"\xc0\x9d", b"\xc0\x9e", b"\xc0\x9f", b"\xc0\xa0", b"\xc0\xa1", b"\xc0\xa2", b"\xc0\xa3",  b"\xc0\xac", b"\xc0\xad", b"\xc0\xae", b"\xc0\xaf", b'\xcc\x13', b'\xcc\x14', b'\xcc\xa8', b'\xcc\xa9', b'\x13\x01', b'\x13\x02', b'\x13\x03', b'\x13\x04', b'\x13\x05']
     count = 1
     for bytes in list:
-        strtype_bytes = str(bytes.hex())
+        strtype_bytes = codecs.encode(bytes, 'hex').decode('ascii')
         if cipher == strtype_bytes:
             break
         count += 1
@@ -442,6 +454,12 @@ def version_byte(version):
     count = int(version[3:4])
     byte = options[count]
     return byte
+
+def ParseNumber(number):
+    if number.startswith('0x'):
+        return int(number[2:], 16)
+    else:
+        return int(number)
 
 def main():
     #Select the packets and formats to send
@@ -532,6 +550,16 @@ def main():
         if args.json:
             sys.stdout.write("}\n")
 
+
+#set proxy
+if args.proxy:
+    proxyhost, proxyport = args.proxy.split(':')
+    proxyport = ParseNumber(proxyport)
+    try:
+        import socks
+    except ImportError:
+        print('Option proxy requires PySocks: pip install PySocks')
+        exit()
 
 #Set destination host and port
 destination_host = args.scan
