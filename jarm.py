@@ -511,7 +511,10 @@ def main():
             else:
                 file.write(destination_host + "," + ip + "," + result)
         else:
-            file.write(destination_host + ",Failed to resolve IP," + result)
+            if args.json:
+                file.write('{"host":"' + destination_host + '","ip":"' + 'Failed to resolve IP' + '","result":"' + result + '"')
+            else:
+                file.write(destination_host + ",Failed to resolve IP," + result)
         #Verbose mode adds pre-fuzzy-hashed JARM
         if args.verbose:
             if args.json:
