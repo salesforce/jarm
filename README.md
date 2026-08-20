@@ -11,31 +11,47 @@ JARM fingerprints can be used to:
 - Identify malware command and control infrastructure and other malicious servers on the Internet.
   
 JARM support has been or is being added to:  
-[SecurityTrails](https://securitytrails.com/)  
-[Shodan](http://shodan.io/)  
-[BinaryEdge](https://www.binaryedge.io/)  
-[RiskIQ](https://www.riskiq.com/blog/external-threat-management/jarm-incident-response/)  
-[Palo Alto Networks](https://medium.com/palo-alto-networks-developer-blog/fingerprinting-ssl-servers-using-jarm-and-python-6d03f6d38dec)  
-[Censys](https://censys.io/)  
-[360](https://wangzhan.360.cn/296.html)  
+- [SecurityTrails](https://securitytrails.com/)  
+- [Shodan](http://shodan.io/)  
+- [BinaryEdge](https://www.binaryedge.io/)  
+- [Censys Search](https://search.censys.io/) 
+- [RiskIQ](https://www.riskiq.com/blog/external-threat-management/jarm-incident-response/)  
+- [Palo Alto Networks](https://medium.com/palo-alto-networks-developer-blog/fingerprinting-ssl-servers-using-jarm-and-python-6d03f6d38dec)   
+- [360](https://wangzhan.360.cn/296.html)  
 
   
 ### Run JARM
-`python3 jarm.py [-h] [-i INPUT] [-p PORT] [-v] [-V] [-o OUTPUT] [-j] [-P PROXY] [domain/IP]`  
-Example:  
-`% python3 jarm.py www.salesforce.com`  
-`Domain: www.salesforce.com`  
-`Resolved IP: 23.50.225.123`  
-`JARM: 2ad2ad0002ad2ad00042d42d00000069d641f34fe76acdc05c40262f8815e5`
+
+```usage
+python3 jarm.py [-h] [-i INPUT] [-p PORT] [-v] [-V] [-o OUTPUT] [-j] [-P PROXY] [domain/IP]
+```
+
+Example:
+
+```sh
+$ python3 jarm.py www.salesforce.com
+Domain: www.salesforce.com
+Resolved IP: 23.50.225.123
+JARM: 2ad2ad0002ad2ad00042d42d00000069d641f34fe76acdc05c40262f8815e5
+```
 
 To use it with Python 2 you'll need the [ipaddress](https://pypi.org/project/ipaddress/) module:
 
-`pip install -r requirements.txt`
+```sh
+pip install -r requirements.txt
+```
   
 ### Batch run JARM on a large list at speed
-`./jarm.sh <list> <output_file>`  
-Example:  
-`% ./jarm.sh alexa500.txt jarm_alexa_500.csv`  
+
+```usage
+./jarm.sh <list> <output_file>
+```
+
+Example:
+
+```sh
+$ ./jarm.sh alexa500.txt jarm_alexa_500.csv
+```
   
 ### Example Output  
 | Domain | JARM |
